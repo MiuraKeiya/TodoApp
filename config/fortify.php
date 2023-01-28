@@ -46,7 +46,7 @@ return [
     |
     */
 
-    'username' => 'email',
+    'username' => 'name',
 
     'email' => 'email',
 
@@ -118,7 +118,7 @@ return [
     |
     */
 
-    'views' => false, // true
+    'views' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -131,17 +131,12 @@ return [
     |
     */
 
+    // 利用したい認証機能
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        // Features::emailVerification(),
-        Features::updateProfileInformation(),
+        Features::emailVerification(),
         Features::updatePasswords(),
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-            // 'window' => 0,
-        ]),
     ],
 
 ];
