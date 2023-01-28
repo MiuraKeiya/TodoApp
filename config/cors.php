@@ -15,11 +15,13 @@ return [
     |
     */
 
+    // CORSを許可するパス
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    // CORSを許可するオリジン
+    'allowed_origins' => [env('APP_URL')],
 
-    'allowed_origins' => ['*'],
+    'allowed_methods' => ['*'],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +31,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
