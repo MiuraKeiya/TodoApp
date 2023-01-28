@@ -134,9 +134,6 @@ return [
     // 利用したい認証機能
     'features' => [
         Features::registration(),
-        Features::resetPasswords(),
-        Features::emailVerification(),
-        Features::updatePasswords(),
     ],
 
 ];
