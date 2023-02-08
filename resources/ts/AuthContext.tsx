@@ -1,7 +1,8 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import {useContext, createContext, useState, ReactNode, useEffect} from "react"
-import {Route, Redirect, useHistory} from "react-router-dom"
+import {Route, Navigate,useLocation} from "react-router-dom"
 
+// SPA認証とアクセス制限
 interface User {
   id: number
   name: string
@@ -16,82 +17,81 @@ interface LoginData {
   email: string,
   password: string,
 }
-interface RegisterData {
+export interface RegisterData {
   email: string,
   password: string,
-  password_confirmation: string,
 }
 interface ProfileData {
-  name?: string,
+  name?: string, // ?がついてるプロパティは使っても使わなくても良いと言う意味
   email?: string
 }
 interface authProps {
   user: User | null;
   register: (registerData: RegisterData) => Promise<void>
-  signin: (loginData: LoginData) => Promise<void>;
-  signout: () => Promise<void>;
+  signIn: (loginData: LoginData) => Promise<void>;
+  signOut: () => Promise<void>;
   saveProfile: (formData: FormData | ProfileData) => Promise<void>;
 }
 interface Props {
   children: ReactNode
 }
 interface RouteProps {
-  children: ReactNode,
-  path: string,
-  exact?: boolean
+  component: any,
+  redirect: string,
 }
 interface From {
   from: Location
 }
 
-const authContext = createContext<authProps | null>(null)
+export const AuthContext = createContext<authProps | null>(null) // 渡す値の型はauthPropsまたはnullで初期値はnull
 
-const ProvideAuth = ({children}: Props) => {
-  const auth = useProvideAuth();
+export const ProvideAuth = ({children}: Props) => { // childrenにしないとindex.jsxで使えない。propsだと不可、引数の段階で分割代入している
+  const auth = useProvideAuth(); // authは認証ユーザーのデータを持ってる、下で定義している
   return (
-    <authContext.Provider value={auth}>
+    <AuthContext.Provider value={auth}> 
       {children}
-    </authContext.Provider>
+    </AuthContext.Provider> // childrenにはコンポーネントが入り、それらすべてがauthという値を使うことができる
   )
 }
-export default ProvideAuth
 
 export const useAuth = () => {
-  return useContext(authContext)
+  return useContext(AuthContext) // authの値を参照できる、この関数を実行することで認証ユーザーのデータを参照することができる
 }
 
 const useProvideAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null); 
 
   const register = (registerData: RegisterData) => {
-    return axios.post('/api/register', registerData).then((res) => {
-      axios.get('api/user').then((res) => {
-        setUser(res.data)
+    return axios.post('/api/register', registerData).then((res) => { // 登録、postはサーバーへ情報を送る、第2引数に実際に送信する値
+      axios.get('api/user').then((res) => { // getはAPI通信でサーバーからデータ取得、thenが成功した時の処理、resが取得したデータ
+        setUser(res.data) // userにデータが入る
       })
     })
   }
 
-  const signin = async (loginData: LoginData) => {
-    try {
-      const res = await axios.post('/api/login', loginData);
+  const signIn = async (loginData: LoginData) => { // asyncは関数の前につけるだけで非同期処理を行うことができる、promiseを返してくれる
+    try { //　tryは例外処理
+          await axios.post('/api/login', loginData); // ログイン, awaitはpromise処理の結果が返ってくるまで一時停止してくれる演算子
     } catch (error) {
       throw error;
     }
 
     return axios.get('/api/user').then((res) => {
       setUser(res.data)
+    }).catch(() => {
+      setUser(null)
+    })
+  }
+
+  const signOut = () => {
+    return axios.post('/api/logout', {}).then(() => { // ログアウト
+      setUser(null)
     }).catch((error) => {
-      setUser(null)
+      throw error;
     })
   }
 
-  const signout = () => {
-    return axios.post('/api/logout', {}).then(() => {
-      setUser(null)
-    })
-  }
-
-  const saveProfile = async (formData: FormData | ProfileData) => {
+  const saveProfile = async (formData: FormData | ProfileData) => { // ユーザー情報更新
     const res = await axios.post(
       '/api/user/profile-information', 
       formData, 
@@ -103,16 +103,17 @@ const useProvideAuth = () => {
     if(res?.status == 200) {
       return axios.get('/api/user').then((res) => {
         setUser(res.data)
-      }).catch((error) => {
+      }).catch(() => {
         setUser(null)
       })
     }
   }
 
+  // 初回アクセス時ユーザー情報取得,useEffect(実行する関数, [依存する値]);
   useEffect(() => {
     axios.get('/api/user').then((res) => {
       setUser(res.data)
-    }).catch((error) => {
+    }).catch(() => {
       setUser(null)
     })
   }, [])
@@ -120,50 +121,48 @@ const useProvideAuth = () => {
   return {
     user,
     register,
-    signin,
-    signout,
+    signIn,
+    signOut,
     saveProfile
   }
-}
+} // ここまでuseProvideAuth
 
 /**
  * 認証済みのみアクセス可能
+ * 
  */
-export const PrivateRoute = ({children, path, exact = false}: RouteProps) => {
+export const PrivateRoute = (props: RouteProps) => {
   const auth = useAuth()
-  return (
-    <Route
-      path={path}
-      exact={exact}
-      render={({ location }) => {
-        if(auth?.user == null) {
-          return <Redirect to={{ pathname: "/login", state: { from: location }}}/>
-        } else {
-          return children
-        }
-      }}
-    />
-  )
+
+  const {redirect, component} = props;
+
+  if (auth?.user === null) {
+    return <Navigate to={redirect} state={{from:useLocation()}} />
+  } else {
+    return <>{component}</>
+  }
+  
 }
 
 
 /**
  * 認証していない場合のみアクセス可能（ログイン画面など）
  */
-export const PublicRoute = ({children, path, exact = false}: RouteProps) => {
+export const PublicRoute = ({children, path}: RouteProps) => {
   const auth = useAuth()
-  const history = useHistory()
   return (
     <Route
       path={path}
-      exact={exact}
-      render={({ location }) => {
-        if(auth?.user == null) {
+      render={({ location }:any) => { // あとで修正
+        if(auth?.user === null) {
           return children
         } else {
-          return <Redirect to={{pathname: (history.location.state as From) ? (history.location.state as From).from.pathname : '/' , state: { from: location }}}/>
+          return <Navigate to={{pathname: (location.state as From) ? (location.state as From).from.pathname : '/' , state: { from: location }}}/>
         }
       }}
     />
   )
 }
+
+/* <Navigate to="/" state={{ from: location }}/> */
+// {{pathname: (navigate.location.state as From) ? (navigate.location.state as From).from.pathname : '/' , state: { from: location }}}

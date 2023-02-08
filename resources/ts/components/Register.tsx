@@ -2,31 +2,33 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios"
 import { useForm } from "react-hook-form";
-// import TextField from '@mui/material/TextField'; 使う??
-import { LoadingButton } from '@mui/lab';
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../AuthContext";
+import { RegisterData } from "../AuthContext";
 // 型を定義
-interface NameAndEmailAndPassword {
+interface RegisterForm extends RegisterData{
     name: string,
-    email: string,
-    password: string,
     submit: string
 };
 
-// ユーザー登録時エラー表示
-export const Profile = () => {
-    const { register, handleSubmit, setError, formState: { errors } } = useForm<NameAndEmailAndPassword>();
+// ユーザー登録
+export const Register = () => {
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterForm>();
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
-    
-    const onSubmit = (data: NameAndEmailAndPassword) => {
+    const auth = useAuth() // 追加
+    // const instance = axios.create({
+    //     baseURL: 'http://localhost:80',
+    //     withCredentials: true,
+    // });
+
+    const onSubmit = (data: RegisterForm) => {
         setLoading(true)
-        axios.get('/sanctum/csrf-cookie').then(() => {
-            axios.post('/api/register', data).then(() => {
-                navigate('/') // 第一引数に遷移するパス
-            }).catch(error => {
-                console.log(error)
+        axios.get('/sanctum/csrf-cookie').then(() => { // Laravel Sanctumをインストールした時点で専用のエンドポイント(/sanctum/csrf-cookie)が追加されており、認証処理を行う前にこのエンドポイントにリクエストを投げて、アプリケーションのCSRF保護を初期化する必要がある
+            auth?.register(data).then(() => {
+                navigate('/home') // 第一引数に遷移するパス
+            }).catch((error) => {
+                console.log(error);
                 setError('submit', {
                 type: 'manual',
                 message: '登録に失敗しました。再度登録をしてください'
@@ -38,7 +40,7 @@ export const Profile = () => {
     
     // ユーザー登録画面
     return (
-        <div>
+        <div className="p-4 max-w-screen-sm mx-auto">
             <h1 className="text-center text-xl font-bold">アカウント作成</h1>
             <p className="text-center"><Link to="/" className="text-sm c-link">アカウントを持っている方はこちら</Link></p>
             <hr />
@@ -65,37 +67,10 @@ export const Profile = () => {
                     {errors.password && <p>{errors.password.message}</p>}
                 </div>
             <div>
-                <button>アカウントを作成する</button>
-                {/* <LoadingButton type="submit" loading={loading} variant="contained" fullWidth>アカウントを作成する</LoadingButton> */}
+                <button type="submit" disabled={loading} >アカウントを作成する</button>
                 {errors.submit && <p>{errors.submit.message}</p>}
             </div>
             </form>
         </div>
     )
 }
-    
-/* //     return (
-//         <div className='signupContainer'>
-//             <form>
-//                 <h2>アカウント作成</h2>
-//                 <Link to="/">アカウントを持っている方はこちら</Link>
-//                 <hr />
-//                 <div className='uiSignup'>
-//                     <div className='signupField'>
-//                         <label>ユーザー名</label>
-//                         <input type='text' placeholder='ユーザー名' name='username' />
-//                     </div>
-//                     <div className='signupField'>
-//                         <label>メールアドレス</label>
-//                         <input type='text' placeholder='メールアドレス' name='mailAddress' />
-//                     </div>
-//                     <div className='signupField'>
-//                         <label>パスワード</label>
-//                         <input type='text' placeholder='パスワード' name='password' />
-//                     </div>
-//                     <button className='submitButton'>アカウントを作成する</button>
-//                 </div>
-//             </form>
-//         </div>
-//     );
-// }; */
