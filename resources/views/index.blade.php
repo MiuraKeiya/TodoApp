@@ -7,7 +7,7 @@
         <title>ToDo</title>
         
         @viteReactRefresh
-        @vite(['resources/sass/app.scss', 'resources/ts/index.tsx'])
+        @vite(['resources/css/app.css', 'resources/ts/index.tsx'])
 
     </head>
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 import {useContext, createContext, useState, ReactNode, useEffect} from "react"
-import {Route, Navigate,useLocation} from "react-router-dom"
+import {Navigate,useLocation} from "react-router-dom"
 
 // SPA認証とアクセス制限
 interface User {
@@ -19,10 +19,10 @@ interface LoginData {
 }
 export interface RegisterData {
   email: string,
-  password: string,
+  password: number | string,
 }
 interface ProfileData {
-  name?: string, // ?がついてるプロパティは使っても使わなくても良いと言う意味
+  name?: string, 
   email?: string
 }
 interface authProps {
@@ -38,9 +38,6 @@ interface Props {
 interface RouteProps {
   component: any,
   redirect: string,
-}
-interface From {
-  from: Location
 }
 
 export const AuthContext = createContext<authProps | null>(null) // 渡す値の型はauthPropsまたはnullで初期値はnull
@@ -61,12 +58,13 @@ export const useAuth = () => {
 const useProvideAuth = () => {
   const [user, setUser] = useState<User | null>(null); 
 
-  const register = (registerData: RegisterData) => {
-    return axios.post('/api/register', registerData).then((res) => { // 登録、postはサーバーへ情報を送る、第2引数に実際に送信する値
-      axios.get('api/user').then((res) => { // getはAPI通信でサーバーからデータ取得、thenが成功した時の処理、resが取得したデータ
-        setUser(res.data) // userにデータが入る
-      })
-    })
+  const register = async (registerData: RegisterData) => {
+    try {
+      const res = await axios.post('/api/register', registerData)
+      setUser(res.data)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const signIn = async (loginData: LoginData) => { // asyncは関数の前につけるだけで非同期処理を行うことができる、promiseを返してくれる
@@ -108,22 +106,35 @@ const useProvideAuth = () => {
       })
     }
   }
+  // タスク追加処理
+  const [tasks, setTasks] = useState(null);
+  
+  const task = (taskData) => {
+    axios.post('/api/addition', taskData).then(() => {
+      axios.get('/api/tasks').then((res) => {
+        setTasks(res.data)
+      })
+    })
+  }
 
   // 初回アクセス時ユーザー情報取得,useEffect(実行する関数, [依存する値]);
   useEffect(() => {
     axios.get('/api/user').then((res) => {
       setUser(res.data)
-    }).catch(() => {
+    }).catch((error) => {
       setUser(null)
+      console.log(error)
     })
   }, [])
 
   return {
     user,
+    tasks,
     register,
     signIn,
     signOut,
-    saveProfile
+    saveProfile,
+    task
   }
 } // ここまでuseProvideAuth
 
@@ -132,7 +143,7 @@ const useProvideAuth = () => {
  * 
  */
 export const PrivateRoute = (props: RouteProps) => {
-  const auth = useAuth()
+  const auth = useAuth();
 
   const {redirect, component} = props;
 
@@ -144,25 +155,17 @@ export const PrivateRoute = (props: RouteProps) => {
   
 }
 
-
 /**
  * 認証していない場合のみアクセス可能（ログイン画面など）
  */
-export const PublicRoute = ({children, path}: RouteProps) => {
-  const auth = useAuth()
-  return (
-    <Route
-      path={path}
-      render={({ location }:any) => { // あとで修正
-        if(auth?.user === null) {
-          return children
-        } else {
-          return <Navigate to={{pathname: (location.state as From) ? (location.state as From).from.pathname : '/' , state: { from: location }}}/>
-        }
-      }}
-    />
-  )
-}
+export const PublicRoute = (props: RouteProps) => {
+  const auth = useAuth();
 
-/* <Navigate to="/" state={{ from: location }}/> */
-// {{pathname: (navigate.location.state as From) ? (navigate.location.state as From).from.pathname : '/' , state: { from: location }}}
+  const {redirect, component} = props;
+
+    if (auth?.user == null) {
+      return <>{component}</>
+    } else {
+      return <Navigate to={redirect}/>
+    }
+}
