@@ -1,5 +1,18 @@
+import { useAuth } from "../AuthContext"
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+
 export const Addition = () => {
+    const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm();
+    const [loading, setLoading] = useState(false);
+    const auth = useAuth();
+
+    const onSubmit = (data) => {
     
+        auth?.task(data).then((res) => {
+            console.log(res.title);
+        })
+    }
 
     return (
         <div className="bg-white lg:pb-12">
@@ -10,11 +23,18 @@ export const Addition = () => {
                     </p>
                 </header>
             </div>
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex justify-center">
                     <div className="w-5/6">
-                        <textarea className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded
-                            transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" placeholder="新しいタスク"/>
+                        <label>タイトル</label>
+                        <input {...register('title')} placeholder="タイトル"></input>
+                    <div>
+                        <label>本文</label>
+                        <input {...register('body')} placeholder="本文"></input>
+                    </div>
+                    <div>
+                        <button type="submit">追加する</button>
+                    </div>    
                     </div>
                 </div>
             </form>
