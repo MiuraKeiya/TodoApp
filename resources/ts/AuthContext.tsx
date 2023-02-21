@@ -31,6 +31,7 @@ interface authProps {
   signIn: (loginData: LoginData) => Promise<void>;
   signOut: () => Promise<void>;
   saveProfile: (formData: FormData | ProfileData) => Promise<void>;
+  task: any;
 }
 interface Props {
   children: ReactNode
@@ -109,12 +110,10 @@ const useProvideAuth = () => {
   // タスク追加処理
   const [tasks, setTasks] = useState(null);
   
-  const task = (taskData) => {
-    axios.post('/api/addition', taskData).then(() => {
-      axios.get('/api/tasks').then((res) => {
-        setTasks(res.data)
+  const task = (data) => {
+    axios.post('/api/task', data).then((res) => {
+      console.log(res);
       })
-    })
   }
 
   // 初回アクセス時ユーザー情報取得,useEffect(実行する関数, [依存する値]);
