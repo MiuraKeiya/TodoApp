@@ -17,13 +17,18 @@ class TaskController extends Controller
         //
     }
 
-    
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $task = Task::create([
             'title' => $request->title,
             'body' => $request->body,
         ]);
+
         return response()->json($task);
     }
 

@@ -27,10 +27,10 @@ export const Addition = () => {
                 <div className="flex justify-center">
                     <div className="w-5/6">
                         <label>タイトル</label>
-                        <input {...register('title')} placeholder="タイトル"></input>
+                        <input name="title" placeholder="タイトル"></input>
                     <div>
                         <label>本文</label>
-                        <input {...register('body')} placeholder="本文"></input>
+                        <input name="body" placeholder="本文"></input>
                     </div>
                     <div>
                         <button type="submit">追加する</button>
