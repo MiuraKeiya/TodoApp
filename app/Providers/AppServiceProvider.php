@@ -14,8 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // トークン管理テーブルは不要なので無効化
-        Sanctum::ignoreMigrations();
+        
     }
 
     /**

@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('posts', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
                 $table->timestamp('email_verified_at')->nullable();  //カラム追加
         });
     }

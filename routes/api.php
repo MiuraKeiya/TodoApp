@@ -21,4 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/task', [TaskController::class, 'create']);
+Route::middleware('auth:sanctum')->post('/task', [TaskController::class, 'create']);
