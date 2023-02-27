@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Exception;
@@ -19,7 +20,10 @@ class TaskController extends Controller
 		}
         /**
          * DB登録処理の成功時失敗時の挙動
-         * このメソッドを呼ぶことで登録される
+         * このメソッドを呼ぶことでタスクが登録される
+		 * 
+		 * @param Request $request
+		 * @return JsonResponse
          */
         public function create(Request $request): JsonResponse
 		{
@@ -34,5 +38,11 @@ class TaskController extends Controller
 			}	
 			// 成功時
 			return response()->json(['message' => 'DBに保存しました!'], 200);
+		}
+
+		public function read() {
+			$task = Task::Where('user_id', Auth()->user()->id)->get();
+			
+			return response()->json($task, 200);
 		}
 }

@@ -10,6 +10,8 @@ class TaskRepository {
     /**
      * DB登録処理
      * user()で認証ユーザーを取得している
+     * 
+     * @param Request $request
      */
     public function createNewTask(Request $request)
     {
