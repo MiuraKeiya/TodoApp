@@ -4,87 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    private $taskService;
+		/**
+         * DB登録処理メソッドを使えるようにしている
+         */
+		public function __construct(TaskService $taskService)
+		{
+			$this->taskService = $taskService;
+		}
+        /**
+         * DB登録処理の成功時失敗時の挙動
+         * このメソッドを呼ぶことでタスクが登録される
+		 * 
+		 * @param Request $request
+		 * @return JsonResponse
+         */
+        public function create(Request $request): JsonResponse
+		{
+			try {
+				// 例外が発生するかもしれない処理(DB登録に失敗するかもしれない)
+				$this->taskService->createNewTask($request);
+			} catch (Exception $error) {
+				// 例外発生時
+                logger('ERROR:'.$error);
+				return response()->json(['message' => 'DBの登録に失敗しました'], 400);
+                
+			}	
+			// 成功時
+			return response()->json(['message' => 'DBに保存しました!'], 200);
+		}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        $task = Task::create([
-            'title' => $request->title,
-            'body' => $request->body,
-        ]);
-
-        return response()->json($task);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Task $task)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Task $task)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Task $task)
-    {
-        //
-    }
+		public function read() {
+			$task = Task::Where('user_id', Auth()->user()->id)->get();
+			
+			return response()->json($task, 200);
+		}
 }
