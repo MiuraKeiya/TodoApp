@@ -5,17 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class TaskController extends Controller
 {
     private $taskService;
-		// 依存注入
+		/**
+         * DB登録処理メソッドを使えるようにしている
+         */
 		public function __construct(TaskService $taskService)
 		{
 			$this->taskService = $taskService;
 		}
-
-        public function create(Request $request)
+        /**
+         * DB登録処理の成功時失敗時の挙動
+         * このメソッドを呼ぶことで登録される
+         */
+        public function create(Request $request): JsonResponse
 		{
 			try {
 				// 例外が発生するかもしれない処理(DB登録に失敗するかもしれない)

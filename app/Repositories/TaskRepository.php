@@ -7,10 +7,12 @@ use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 
 class TaskRepository {
-    // DBとの通信
+    /**
+     * DB登録処理
+     * user()で認証ユーザーを取得している
+     */
     public function createNewTask(Request $request)
     {
-        logger('TEST:'.$request->user());
         Task::create([
             'title' => $request->title,
             'body' => $request->body,
