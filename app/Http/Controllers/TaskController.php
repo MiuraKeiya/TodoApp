@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-
+// コントローラーはあくまでもレスポンス返すだけにする
 class TaskController extends Controller
 {
     private $taskService;
+
 		/**
          * DB登録処理メソッドを使えるようにしている
          */
@@ -18,6 +18,7 @@ class TaskController extends Controller
 		{
 			$this->taskService = $taskService;
 		}
+		
         /**
          * DB登録処理の成功時失敗時の挙動
          * このメソッドを呼ぶことでタスクが登録される
@@ -40,9 +41,12 @@ class TaskController extends Controller
 			return response()->json(['message' => 'DBに保存しました!'], 200);
 		}
 
-		public function read() {
-			$task = Task::Where('user_id', Auth()->user()->id)->get();
-			
+		/**
+		 * タスク取得
+		 */
+		public function read()
+		{	
+			$task = $this->taskService->readTask();
 			return response()->json($task, 200);
 		}
 }

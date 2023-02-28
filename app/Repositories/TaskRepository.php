@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
-use Illuminate\Support\Facades\Auth;
 
 class TaskRepository {
     /**
@@ -20,5 +19,12 @@ class TaskRepository {
             'body' => $request->body,
             'user_id' => $request->user()->id,
         ]);
+    }
+
+    /**
+     * 認証ユーザータスク全件取得
+     */
+    public function readTask() {
+        return Task::where('user_id', Auth()->user()->id)->get();
     }
 }
