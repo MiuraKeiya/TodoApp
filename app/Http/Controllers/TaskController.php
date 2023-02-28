@@ -44,9 +44,15 @@ class TaskController extends Controller
 		/**
 		 * タスク取得
 		 */
-		public function read()
+		public function read(): JsonResponse
 		{	
-			$task = $this->taskService->readTask();
+			try{
+				$task = $this->taskService->readTask();
+			} catch (Exception $error) {
+				logger('ERROR:'.$error);
+				return response()->json(['message' => 'タスクに失敗しました'], 400);
+			}
+			
 			return response()->json($task, 200);
 		}
 }
