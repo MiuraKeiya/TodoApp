@@ -38,7 +38,7 @@ class TaskController extends Controller
                 
 			}	
 			// 成功時
-			return response()->json(['message' => 'DBに保存しました!'], 200);
+			return response()->json(['message' => 'DBに保存しました!'], 201);
 		}
 
 		/**
