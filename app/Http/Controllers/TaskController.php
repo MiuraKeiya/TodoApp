@@ -50,7 +50,7 @@ class TaskController extends Controller
 				$task = $this->taskService->readTask();
 			} catch (Exception $error) {
 				logger('ERROR:'.$error);
-				return response()->json(['message' => 'タスクに失敗しました'], 400);
+				return response()->json(['message' => 'タスク取得に失敗しました'], 400);
 			}
 			
 			return response()->json($task, 200);
