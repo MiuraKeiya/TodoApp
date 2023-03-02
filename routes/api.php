@@ -3,6 +3,7 @@
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RepuestController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function(){
-    Route::post('/task', [TaskController::class, 'create']);
     //ここに追加していく
+    Route::post('/task', [TaskController::class, 'create']);
     Route::get('/user/task', [TaskController::class, 'read']);
+    Route::get('/user', [UserController::class, 'readUser']);
 });

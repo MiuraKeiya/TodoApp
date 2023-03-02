@@ -1,17 +1,42 @@
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+
+type Task = {
+    id: number;
+    title: string;
+    body: string;
+    user_id: number;
+    created_at: Date;
+    updated_at: Date;
+};
 
 export const Home = () => {
     const navigate = useNavigate();
-
+    
+    //　タスク登録画面へ
     const addition = () => {
         navigate('/addition')
     }
 
+    // アカウント画面へ
     const account = () => {
         navigate('/account')
     }
-    
+
+    // タスク取得
+    const [task, setTask] = useState<Task[]>([]);
+    useEffect(() => {
+        axios.get<Task[]>('api/user/task').then((res) => {
+            setTask(res.data);
+            console.log(res.data)
+        })
+    }, [])
+
+
     return (
+    <div>
         <div className="bg-white lg:pb-12">
             <div className="max-w-screen-2xl px-4 md:px-8 mx-auto">
                 <header className="flex justify-between items-center py-4 md:py-8">
@@ -20,7 +45,7 @@ export const Home = () => {
                         <path d="M96 0V47L48 94H0V47L48 0H96Z" />
                         </svg>
                         タスク一覧
-                    </p>
+                    </p>                   
                     <div className="hidden lg:flex flex-col sm:flex-row sm:justify-center lg:justify-start gap-2.5 -ml-8">
                         <button onClick={addition} className="inline-flex rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             <svg className="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -35,5 +60,19 @@ export const Home = () => {
                 </header>
             </div>
         </div>
+        <div>
+            <ul>
+                {task.map((t) => (
+                    <li key={t.id}>
+                        <label>
+                            <input type="checkbox"/>
+                            <span>{t.title}</span>
+                            <span>{t.body}</span>
+                        </label>
+                    </li>
+                ))}
+            </ul>
+        </div> 
+    </div>
     )
 }

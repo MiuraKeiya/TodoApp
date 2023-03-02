@@ -107,19 +107,21 @@ const useProvideAuth = () => {
       })
     }
   }
-  // タスク追加処理
-  const [tasks, setTasks] = useState(null);
-  
-  const task = (data) => {
-    axios.post('/api/task', data).then((res) => {
-      console.log(res);
-      })
+
+  // タスク登録処理
+  const task = async(taskData) => {
+    try{
+      await axios.post('api/task', taskData);
+    } catch(error) {
+      console.log(error);
+    }
   }
 
   // 初回アクセス時ユーザー情報取得,useEffect(実行する関数, [依存する値]);
   useEffect(() => {
     axios.get('/api/user').then((res) => {
       setUser(res.data)
+      console.log(res.data)
     }).catch((error) => {
       setUser(null)
       console.log(error)
@@ -128,12 +130,11 @@ const useProvideAuth = () => {
 
   return {
     user,
-    tasks,
     register,
     signIn,
     signOut,
     saveProfile,
-    task
+    task,
   }
 } // ここまでuseProvideAuth
 
