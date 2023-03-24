@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+
 type taskData = {
     title: string;
     body: string;
@@ -14,7 +14,6 @@ export const Addition = () => {
     const [loading, setLoading] = useState(false);
     const auth = useAuth();
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
 
     const onSubmit = (taskData: taskData) => {
         setLoading(true);
@@ -30,6 +29,10 @@ export const Addition = () => {
                     setLoading(false)
             })
         })   
+    }
+// 戻るボタン
+    const home = () => {
+        navigate('/home');
     }
 
     // useEffect(() => {
@@ -47,7 +50,6 @@ export const Addition = () => {
     //   } else {
     //     navigate('/addition')
     //   }
-      
     return (
         <div className="bg-white lg:pb-12">
             <div className="max-w-screen-2xl px-4 md:px-8 mx-auto">
@@ -74,7 +76,9 @@ export const Addition = () => {
                     </div>
                 </div>
             </form>
-        </div>
-        
+            <div>
+            <button onClick={home}>戻る</button>
+            </div>
+        </div>     
     )
 }

@@ -33,8 +33,7 @@ export const Home = () => {
             console.log(res.data)
         })
     }, [])
-
-
+    
     return (
     <div>
         <div className="bg-white lg:pb-12">

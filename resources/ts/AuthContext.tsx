@@ -1,6 +1,6 @@
 import axios from "axios";
 import {useContext, createContext, useState, ReactNode, useEffect} from "react"
-import {Navigate,useLocation} from "react-router-dom"
+import {Navigate, useLocation} from "react-router-dom"
 
 // SPA認証とアクセス制限
 interface User {
@@ -21,16 +21,16 @@ export interface RegisterData {
   email: string,
   password: number | string,
 }
-interface ProfileData {
-  name?: string, 
-  email?: string
-}
+// interface ProfileData {
+//   name?: string, 
+//   email?: string
+// }
 interface authProps {
   user: User | null;
   register: (registerData: RegisterData) => Promise<void>
   signIn: (loginData: LoginData) => Promise<void>;
   signOut: () => Promise<void>;
-  saveProfile: (formData: FormData | ProfileData) => Promise<void>;
+  // saveProfile: (formData: FormData | ProfileData) => Promise<void>;
   task: any;
 }
 interface Props {
@@ -70,16 +70,17 @@ const useProvideAuth = () => {
 
   const signIn = async (loginData: LoginData) => { // asyncは関数の前につけるだけで非同期処理を行うことができる、promiseを返してくれる
     try { //　tryは例外処理
-          await axios.post('/api/login', loginData); // ログイン, awaitはpromise処理の結果が返ってくるまで一時停止してくれる演算子
+          const res = await axios.post('/api/login', loginData) // ログイン, awaitはpromise処理の結果が返ってくるまで一時停止してくれる演算子
+          setUser(res.data)
     } catch (error) {
       throw error;
     }
 
-    return axios.get('/api/user').then((res) => {
-      setUser(res.data)
-    }).catch(() => {
-      setUser(null)
-    })
+    // return axios.get('/api/user').then((res) => {
+    //   setUser(res.data)
+    // }).catch(() => {
+    //   setUser(null)
+    // })
   }
 
   const signOut = () => {
@@ -90,23 +91,23 @@ const useProvideAuth = () => {
     })
   }
 
-  const saveProfile = async (formData: FormData | ProfileData) => { // ユーザー情報更新
-    const res = await axios.post(
-      '/api/user/profile-information', 
-      formData, 
-      {headers: {'X-HTTP-Method-Override': 'PUT'}}
-    )
-    .catch((error) => {
-      throw error;
-    })
-    if(res?.status == 200) {
-      return axios.get('/api/user').then((res) => {
-        setUser(res.data)
-      }).catch(() => {
-        setUser(null)
-      })
-    }
-  }
+  // const saveProfile = async (formData: FormData | ProfileData) => { // ユーザー情報更新
+  //   const res = await axios.post(
+  //     '/api/user/profile-information', 
+  //     formData, 
+  //     {headers: {'X-HTTP-Method-Override': 'PUT'}}
+  //   )
+  //   .catch((error) => {
+  //     throw error;
+  //   })
+  //   if(res?.status == 200) {
+  //     return axios.get('/api/user').then((res) => {
+  //       setUser(res.data)
+  //     }).catch(() => {
+  //       setUser(null)
+  //     })
+  //   }
+  // }
 
   // タスク登録処理
   const task = async(taskData) => {
@@ -133,7 +134,7 @@ const useProvideAuth = () => {
     register,
     signIn,
     signOut,
-    saveProfile,
+    // saveProfile,
     task,
   }
 } // ここまでuseProvideAuth
@@ -144,28 +145,50 @@ const useProvideAuth = () => {
  */
 export const PrivateRoute = (props: RouteProps) => {
   const auth = useAuth();
-
   const {redirect, component} = props;
 
   if (auth?.user === null) {
-    return <Navigate to={redirect} state={{from:useLocation()}} />
+    return <Navigate to={redirect}/>
   } else {
     return <>{component}</>
   }
-  
 }
 
 /**
  * 認証していない場合のみアクセス可能（ログイン画面など）
  */
+// export const PublicRoute = (props) => {
+//   const auth = useAuth();
+
+//   const {component, redirect} = props;
+//   const location = useLocation();
+//   if (auth?.user == null) {
+//     return <>{component}</>;
+//   } else {
+//     console.log(location.pathname)
+//     const dynamicRedirect = determineRedirect(location.pathname);
+//     return <Navigate to={dynamicRedirect} />;
+//   }
+// };
+// const determineRedirect = (pathname) => {
+//   // URLパスに応じて、リダイレクト先を決定するロジックを実装する
+//   if (pathname === '/') {
+//     return '/home';
+//   } else if (pathname === '/home') {
+//     return '/home';
+//   } else if (pathname === '/addition') {
+//     return '/addition';
+//   } else if (pathname === '/account') {
+//     return '/account';
+//   }
+// }
 export const PublicRoute = (props: RouteProps) => {
   const auth = useAuth();
-
   const {redirect, component} = props;
 
-    if (auth?.user == null) {
-      return <>{component}</>
-    } else {
-      return <Navigate to={redirect}/>
-    }
+  if (auth?.user === null) {
+    return <>{component}</>
+  } else {
+    return <Navigate to={redirect}/>
+  }
 }
