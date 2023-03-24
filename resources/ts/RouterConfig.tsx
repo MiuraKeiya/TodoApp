@@ -4,15 +4,15 @@ import { Home } from './components/Home';
 import { Login } from './components/Login';
 import { Addition } from "./components/Addition";
 import { Account } from "./components/Account";
-import { ProvideAuth, PrivateRoute, PublicRoute  } from "./AuthContext";
+import { ProvideAuth, PrivateRoute, PublicRoute } from "./AuthContext";
 
 export const RouterConfig = () => {
     return (
         <ProvideAuth>
             <BrowserRouter>
-                <Routes>              
+                <Routes>
                     <Route path='/' element={
-                        <PublicRoute redirect='/home' component={<Login />} />
+                        <PublicRoute redirect='/home' component={<Login />} />                   
                     } />
                     <Route path='/register' element={
                         <PublicRoute redirect='/home' component={<Register />} />

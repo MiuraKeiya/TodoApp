@@ -33,4 +33,11 @@ class TaskService {
     public function readTask() {
         return $this->taskRepository->readTask();
     }
+
+    /**
+     * タスク更新処理を使用
+     */
+    public function updateTask(Request $request) {
+        return $this->taskRepository->updateTask($request);
+    }
 }

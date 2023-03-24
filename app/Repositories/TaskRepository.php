@@ -24,7 +24,21 @@ class TaskRepository {
     /**
      * 認証ユーザータスク全件取得
      */
-    public function readTask() {
+    public function readTask() 
+    {
         return Task::where('user_id', Auth()->user()->id)->get();
     }
+
+    /**
+     * タスク更新処理
+     */
+    public function updateTask(Request $request) 
+    {
+        $Task = Task::find($request->id);
+        $Task->update([
+            'title' => $request->title,
+            'body' => $request->body,
+        ]);
+    }
+
 }

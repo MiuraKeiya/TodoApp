@@ -46,7 +46,7 @@ class TaskController extends Controller
 		 */
 		public function read(): JsonResponse
 		{	
-			try{
+			try {
 				$task = $this->taskService->readTask();
 			} catch (Exception $error) {
 				logger('ERROR:'.$error);
@@ -54,5 +54,20 @@ class TaskController extends Controller
 			}
 			
 			return response()->json($task, 200);
+		}
+
+		/**
+		 * タスク更新
+		 */
+		public function update(Request $request): JsonResponse
+		{
+			try {
+				$this->taskService->updateTask($request);
+			} catch (Exception $error) {
+				logger('ERROR:'.$error);
+				return response()->json(['message' => 'タスク更新に失敗しました'], 409);
+			}
+
+			return response()->json(['message' => 'タスクを更新しました'], 200);
 		}
 }
