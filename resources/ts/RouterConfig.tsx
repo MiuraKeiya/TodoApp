@@ -4,6 +4,7 @@ import { Home } from './components/Home';
 import { Login } from './components/Login';
 import { Addition } from "./components/Addition";
 import { Account } from "./components/Account";
+import { Update } from "./components/Update";
 import { ProvideAuth, PrivateRoute, PublicRoute } from "./AuthContext";
 
 export const RouterConfig = () => {
@@ -25,6 +26,9 @@ export const RouterConfig = () => {
                     } />
                     <Route path='/account' element={
                         <PrivateRoute redirect='/' component={<Account />} />
+                    } />
+                    <Route path='/update/:id' element={
+                        <PrivateRoute redirect='/' component={<Update />} />
                     } />
                 </Routes>
             </BrowserRouter>

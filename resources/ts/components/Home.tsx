@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 type Task = {
     id: number;
@@ -66,7 +67,11 @@ export const Home = () => {
                         <label>
                             <input type="checkbox"/>
                             <span>{t.title}</span>
+                            <br/>
                             <span>{t.body}</span>
+                            <p className="text-indigo-600">
+                            <Link to={'/update/' + t.id}>編集</Link>
+                            </p>
                         </label>
                     </li>
                 ))}

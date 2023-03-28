@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class TaskService {
     private $taskRepository;
+
     /**
     * DB登録処理メソッドをプロパティに代入
     * TaskRepositoryのDB登録処理のメソッドをTaskServiceクラスで使えるようにしている
@@ -17,6 +18,7 @@ class TaskService {
     {
         $this->taskRepository = $taskRepository;
     }
+
     /**
     * 上記で使えるようになったDB登録処理メソッドを使用している
     * 
@@ -36,8 +38,18 @@ class TaskService {
 
     /**
      * タスク更新処理を使用
+     * @param Request $request
      */
     public function updateTask(Request $request) {
         return $this->taskRepository->updateTask($request);
+    }
+
+    /**
+     * 特定idのタスク取得処理を使用
+     * @param $id
+     */
+    public function getTaskById($id)
+    {
+        return $this->taskRepository->getTaskById($id);
     }
 }

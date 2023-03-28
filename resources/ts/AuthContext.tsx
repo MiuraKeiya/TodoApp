@@ -112,7 +112,7 @@ const useProvideAuth = () => {
   // タスク登録処理
   const task = async(taskData) => {
     try{
-      await axios.post('api/task', taskData);
+      await axios.post('/api/task', taskData);
     } catch(error) {
       console.log(error);
     }
