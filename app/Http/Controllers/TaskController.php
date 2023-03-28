@@ -86,4 +86,19 @@ class TaskController extends Controller
 
 			return response()->json($task, 200);
 		}
+
+		/**
+		 * 特定のidのタスク削除
+		 */
+		public function delete(Request $request) 
+		{
+			try{
+				$this->taskService->deleteTask($request);
+			} catch(Exception $error) {
+				logger('ERROR:'.$error);
+				return response()->json(['message' => 'タスク削除に失敗しました'], 409);
+			}
+
+			return response()->json(['message' => 'タスクを削除しました'], 200);
+		}
 }

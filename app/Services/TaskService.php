@@ -52,4 +52,12 @@ class TaskService {
     {
         return $this->taskRepository->getTaskById($id);
     }
+
+    /**
+     * タスク削除処理使用
+     */
+    public function deleteTask(Request $request) 
+    {
+        return $this->taskRepository->deleteTask($request);
+    }
 }
