@@ -45,9 +45,18 @@ class TaskRepository {
      * 特定のIDのタスク取得
      * ルートパラメータのidから該当のレコード取得
      */
-
     public function getTaskById($id)
     {
         return Task::find($id);
+    }
+
+    /**
+     * タスク削除
+     * 特定のidのタスク削除
+     */
+    public function deleteTask(Request $request) 
+    {
+        $Task = Task::find($request->id);
+        $Task->delete();
     }
 }

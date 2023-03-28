@@ -34,6 +34,14 @@ export const Home = () => {
             console.log(res.data)
         })
     }, [])
+
+    // タスク削除
+    const deleteTask = (id: number) => {
+        axios.delete(`/api/user/task/${id}`).then((res) => {
+            console.log(res);
+            setTask(task.filter((t) => t.id !== id));
+        })
+    }
     
     return (
     <div>
@@ -71,6 +79,7 @@ export const Home = () => {
                             <span>{t.body}</span>
                             <p className="text-indigo-600">
                             <Link to={'/update/' + t.id}>編集</Link>
+                            <button onClick={() => deleteTask(t.id)}>削除</button>
                             </p>
                         </label>
                     </li>
