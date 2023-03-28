@@ -70,4 +70,20 @@ class TaskController extends Controller
 
 			return response()->json(['message' => 'タスクを更新しました'], 200);
 		}
+
+		/**
+		 * 特定のidのタスク取得
+		 * パスパラメータのidに該当するタスク（レコード）を取得する
+		 */
+		public function getId($id): JsonResponse
+		{
+			try{
+				$task = $this->taskService->getTaskById($id);
+			} catch (Exception $error) {
+				logger('ERROR:'.$error);
+				return response()->json(['message' => 'タスク取得に失敗しました'], 400);
+			}
+
+			return response()->json($task, 200);
+		}
 }

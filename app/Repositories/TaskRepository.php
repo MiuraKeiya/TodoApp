@@ -7,7 +7,7 @@ use App\Models\Task;
 
 class TaskRepository {
     /**
-     * DB登録処理
+     * タスク登録処理
      * user()で認証ユーザーを取得している
      * 
      * @param Request $request
@@ -41,4 +41,13 @@ class TaskRepository {
         ]);
     }
 
+    /**
+     * 特定のIDのタスク取得
+     * ルートパラメータのidから該当のレコード取得
+     */
+
+    public function getTaskById($id)
+    {
+        return Task::find($id);
+    }
 }
