@@ -1,6 +1,7 @@
 import axios from "axios";
 import {useContext, createContext, useState, ReactNode, useEffect} from "react"
-import {Navigate, useLocation} from "react-router-dom"
+import {Navigate} from "react-router-dom"
+import { Loading } from "./components/Loading";
 
 // SPA認証とアクセス制限
 interface User {
@@ -32,6 +33,7 @@ interface authProps {
   signOut: () => Promise<void>;
   // saveProfile: (formData: FormData | ProfileData) => Promise<void>;
   task: any;
+  loading: boolean;
 }
 interface Props {
   children: ReactNode
@@ -68,6 +70,7 @@ const useProvideAuth = () => {
     }
   }
 
+  const [loading, setLoading] = useState(true);
   const signIn = async (loginData: LoginData) => { // asyncは関数の前につけるだけで非同期処理を行うことができる、promiseを返してくれる
     try { //　tryは例外処理
           const res = await axios.post('/api/login', loginData) // ログイン, awaitはpromise処理の結果が返ってくるまで一時停止してくれる演算子
@@ -123,8 +126,10 @@ const useProvideAuth = () => {
     axios.get('/api/user').then((res) => {
       setUser(res.data)
       console.log(res.data)
+      setLoading(false);
     }).catch((error) => {
       setUser(null)
+      setLoading(false);
       console.log(error)
     })
   }, [])
@@ -136,6 +141,7 @@ const useProvideAuth = () => {
     signOut,
     // saveProfile,
     task,
+    loading,
   }
 } // ここまでuseProvideAuth
 
@@ -147,10 +153,12 @@ export const PrivateRoute = (props: RouteProps) => {
   const auth = useAuth();
   const {redirect, component} = props;
 
-  if (auth?.user === null) {
-    return <Navigate to={redirect}/>
+  if (auth?.loading) { // 認証待機中の場合はローディング画面を表示
+    return <Loading />;
+  } else if (auth?.user === null) { // 認証されていない場合はリダイレクト
+    return <Navigate to={redirect} />;
   } else {
-    return <>{component}</>
+    return <>{component}</>; // 認証されている場合はコンポーネントを表示
   }
 }
 

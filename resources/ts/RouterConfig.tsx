@@ -6,6 +6,7 @@ import { Addition } from "./components/Addition";
 import { Account } from "./components/Account";
 import { Update } from "./components/Update";
 import { ProvideAuth, PrivateRoute, PublicRoute } from "./AuthContext";
+import { NotFound } from "./components/NotFound";
 
 export const RouterConfig = () => {
     return (
@@ -30,6 +31,7 @@ export const RouterConfig = () => {
                     <Route path='/update/:id' element={
                         <PrivateRoute redirect='/' component={<Update />} />
                     } />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
         </ProvideAuth>
